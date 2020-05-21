@@ -79,6 +79,26 @@ resource "azurerm_subnet" "database" {
   address_prefix       = var.snet_database_address_prefix
 }
 
+resource "azurerm_subnet_route_table_association" "dmz" {
+  subnet_id      = azurerm_subnet.dmz.id
+  route_table_id = module.udr_default.udr_id
+}
+
+resource "azurerm_subnet_route_table_association" "web" {
+  subnet_id      = azurerm_subnet.web.id
+  route_table_id = module.udr_default.udr_id
+}
+
+resource "azurerm_subnet_route_table_association" "application" {
+  subnet_id      = azurerm_subnet.application.id
+  route_table_id = module.udr_default.udr_id
+}
+
+resource "azurerm_subnet_route_table_association" "database" {
+  subnet_id      = azurerm_subnet.database.id
+  route_table_id = module.udr_default.udr_id
+}
+
 
 module "nsg_dmz" {
   source   = "./modules/nsg_dmz"
@@ -111,6 +131,14 @@ module "nsg_database" {
   nsg_name = local.nsg_database_name
   location = var.location
 }
+
+module "udr_default" {
+  source   = "./modules/udr_default"
+  rg_name  = azurerm_resource_group.main.name
+  location = var.location
+  tags     = local.tags
+}
+
 
 
 resource "azurerm_virtual_network_peering" "spoke_to_hub" {
