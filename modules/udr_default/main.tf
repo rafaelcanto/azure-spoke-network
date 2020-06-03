@@ -25,11 +25,11 @@ resource "azurerm_route_table" "main" {
   }
 
   route {
-    name           = "route-to-www"
-    address_prefix = "0.0.0.0/0"
-    next_hop_type  = "Internet"
+    name                   = "route-to-www"
+    address_prefix         = "0.0.0.0/0"
+    next_hop_type          = "VirtualAppliance"
+    next_hop_in_ip_address = var.environment_type == "prod" ? "172.26.192.4" : "172.26.255.4"
   }
-
 
   tags = var.tags
 }

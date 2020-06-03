@@ -133,10 +133,11 @@ module "nsg_database" {
 }
 
 module "udr_default" {
-  source   = "./modules/udr_default"
-  rg_name  = azurerm_resource_group.main.name
-  location = var.location
-  tags     = local.tags
+  source           = "./modules/udr_default"
+  rg_name          = azurerm_resource_group.main.name
+  location         = var.location
+  tags             = local.tags
+  environment_type = var.environment_type
 }
 
 
