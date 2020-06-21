@@ -12,11 +12,21 @@ variable "location" {
   default = "eastus"
 }
 
-variable "hub_vnet_id" {
-  default = "/subscriptions/834f081d-bd7c-4908-97bd-98302a28f9fa/resourceGroups/rg-landingzone-dev-network/providers/Microsoft.Network/virtualNetworks/vnet-landingzone-dev-eastus-01"
+variable "brsouth_prd_hub_vnet_id" {
+  default = "/subscriptions/6fe14cf2-3c56-4bd4-b203-ec40f248b731/resourceGroups/rg-prd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-prd-brsouth-01"
 }
 
+variable "brsouth_nprd_hub_vnet_id" {
+  default = "/subscriptions/280c92f4-08d3-41d1-a216-e445886c3e73/resourceGroups/rg-nprd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-nprd-brsouth-01"
+}
 
+variable "eastus2_nprd_hub_vnet_id" {
+  default = "/subscriptions/280c92f4-08d3-41d1-a216-e445886c3e73/resourceGroups/rg-nprd-eastus2-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-nprd-eastus2-01"
+}
+
+variable "eastus2_prd_hub_vnet_id" {
+  default = "/subscriptions/6fe14cf2-3c56-4bd4-b203-ec40f248b731/resourceGroups/rg-prd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-prd-eastus2-01"
+}
 
 variable "vnet_address_space" {
   default = "172.16.0.0/16"

@@ -34,6 +34,12 @@ locals {
     hardening                   = var.tag_hardening
     region                      = var.location
   }
+
+  hub_vnet_id = (var.environment_type == "prod"  && var.location !== "brazilsouth" ? var.eastus2_prd_hub_vnet_id : (
+    var.environment_type == "prod"  && var.location == "brazilsouth" ? var.brsouth_prd_hub_vnet_id : (
+      var.environment_type !== "prod"  && var.location == "brazilsouth" ? var.brsouth_nprd_hub_vnet_id : var.eastus2_nprd_hub_vnet_id
+    )
+  ))
 }
 
 resource "azurerm_resource_group" "main" {
@@ -146,7 +152,7 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   name                         = "peer-spoke-to-hub-${var.environment_type}-${var.location}"
   resource_group_name          = azurerm_resource_group.main.name
   virtual_network_name         = azurerm_virtual_network.main.name
-  remote_virtual_network_id    = var.hub_vnet_id
+  remote_virtual_network_id    = (var.environment_type == "prod" ? "172.26.192.4" : "172.26.255.4")
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = false
