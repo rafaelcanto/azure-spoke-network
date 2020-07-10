@@ -4,16 +4,16 @@ provider "azurerm" {
 }
 
 locals {
-  rg_name               = "rg-${var.project_name}-${var.environment_type}-network"
-  vnet_name             = "vnet-${var.project_name}-${var.environment_type}-${var.location}-01"
+  rg_name               = "rg-${var.project_name}-networking-${var.environment_type}-01"              // rg-projeto-networking-dev-01
+  vnet_name             = "vnet-${var.project_name}-${var.location}-${var.environment_type}-01" // vnet-projeto-brsouth-dev-01
   snet_dmz_name         = "snet-dmz"
   snet_web_name         = "snet-web"
   snet_application_name = "snet-application"
   snet_database_name    = "snet-database"
-  nsg_dmz_name          = "nsg-${var.project_name}-${var.environment_type}-dmz-01"
-  nsg_web_name          = "nsg-${var.project_name}-${var.environment_type}-web-01"
-  nsg_application_name  = "nsg-${var.project_name}-${var.environment_type}-application-01"
-  nsg_database_name     = "nsg-${var.project_name}-${var.environment_type}-database-01"
+  nsg_dmz_name          = "nsg-${var.project_name}-dmz-${var.environment_type}-01" // nsg-projeto-dmz-dev-01
+  nsg_web_name          = "nsg-${var.project_name}-web-${var.environment_type}-01"
+  nsg_application_name  = "nsg-${var.project_name}-application-${var.environment_type}-01"
+  nsg_database_name     = "nsg-${var.project_name}-database-${var.environment_type}-01"
 
 
   tags = {
@@ -34,12 +34,6 @@ locals {
     hardening                   = var.tag_hardening
     region                      = var.location
   }
-
-  hub_vnet_id = (var.environment_type == "prod"  && var.location !== "brazilsouth" ? var.eastus2_prd_hub_vnet_id : (
-    var.environment_type == "prod"  && var.location == "brazilsouth" ? var.brsouth_prd_hub_vnet_id : (
-      var.environment_type !== "prod"  && var.location == "brazilsouth" ? var.brsouth_nprd_hub_vnet_id : var.eastus2_nprd_hub_vnet_id
-    )
-  ))
 }
 
 resource "azurerm_resource_group" "main" {
@@ -52,7 +46,7 @@ resource "azurerm_virtual_network" "main" {
   name                = local.vnet_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  address_space       = [var.vnet_address_space]
+  address_space       = [var.vnet_address_space] //
   tags                = local.tags
 }
 
@@ -61,28 +55,28 @@ resource "azurerm_subnet" "dmz" {
   name                 = local.snet_dmz_name
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefix       = var.snet_dmz_address_prefix
+  address_prefixes     = [var.snet_dmz_address_prefix]
 }
 
 resource "azurerm_subnet" "web" {
   name                 = local.snet_web_name
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefix       = var.snet_web_address_prefix
+  address_prefixes     = [var.snet_web_address_prefix]
 }
 
 resource "azurerm_subnet" "application" {
   name                 = local.snet_application_name
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefix       = var.snet_application_address_prefix
+  address_prefixes     = [var.snet_application_address_prefix]
 }
 
 resource "azurerm_subnet" "database" {
   name                 = local.snet_database_name
   resource_group_name  = azurerm_resource_group.main.name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefix       = var.snet_database_address_prefix
+  address_prefixes     = [var.snet_database_address_prefix]
 }
 
 resource "azurerm_subnet_route_table_association" "dmz" {
@@ -95,10 +89,10 @@ resource "azurerm_subnet_route_table_association" "web" {
   route_table_id = module.udr_default.udr_id
 }
 
-resource "azurerm_subnet_route_table_association" "application" {
-  subnet_id      = azurerm_subnet.application.id
-  route_table_id = module.udr_default.udr_id
-}
+# resource "azurerm_subnet_route_table_association" "application" {
+#   subnet_id      = azurerm_subnet.application.id
+#   route_table_id = module.udr_default.udr_id
+# }
 
 resource "azurerm_subnet_route_table_association" "database" {
   subnet_id      = azurerm_subnet.database.id
@@ -148,12 +142,12 @@ module "udr_default" {
 
 
 
-resource "azurerm_virtual_network_peering" "spoke_to_hub" {
-  name                         = "peer-spoke-to-hub-${var.environment_type}-${var.location}"
-  resource_group_name          = azurerm_resource_group.main.name
-  virtual_network_name         = azurerm_virtual_network.main.name
-  remote_virtual_network_id    = (var.environment_type == "prod" ? "172.26.192.4" : "172.26.255.4")
-  allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = false
-}
+# resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+#   name                         = "peer-spoke-to-hub-${var.environment_type}-${var.location}"
+#   resource_group_name          = azurerm_resource_group.main.name
+#   virtual_network_name         = azurerm_virtual_network.main.name
+#   remote_virtual_network_id    = var.hub_vnet_id
+#   allow_virtual_network_access = true
+#   allow_forwarded_traffic      = true
+#   allow_gateway_transit        = false
+# }

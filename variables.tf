@@ -9,53 +9,60 @@ variable "project_name" {
 }
 
 variable "location" {
-  default = "eastus"
+  default = "eastus2"
 }
 
-variable "brsouth_prd_hub_vnet_id" {
-  default = "/subscriptions/6fe14cf2-3c56-4bd4-b203-ec40f248b731/resourceGroups/rg-prd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-prd-brsouth-01"
+variable "hub_vnet_id" {
+  type = string
+  description = <<EOT
+                 
+                 Por favor, informe uma rede de trânsito para o seu deployment:
+
+                 brsouth prd hub  -> /subscriptions/6fe14cf2-3c56-4bd4-b203-ec40f248b731/resourceGroups/rg-prd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-prd-brsouth-01
+                 brsouth nprd hub -> /subscriptions/280c92f4-08d3-41d1-a216-e445886c3e73/resourceGroups/rg-nprd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-nprd-brsouth-01
+                 eastus2 prd hub  -> /subscriptions/6fe14cf2-3c56-4bd4-b203-ec40f248b731/resourceGroups/rg-prd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-prd-eastus2-01
+                 eastus2 nprd hub -> /subscriptions/280c92f4-08d3-41d1-a216-e445886c3e73/resourceGroups/rg-nprd-eastus2-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-nprd-eastus2-01
+                 EOT
 }
 
-variable "brsouth_nprd_hub_vnet_id" {
-  default = "/subscriptions/280c92f4-08d3-41d1-a216-e445886c3e73/resourceGroups/rg-nprd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-nprd-brsouth-01"
-}
+variable "hub_firewall_ip" {
+  type = string
+  description = <<EOT
 
-variable "eastus2_nprd_hub_vnet_id" {
-  default = "/subscriptions/280c92f4-08d3-41d1-a216-e445886c3e73/resourceGroups/rg-nprd-eastus2-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-nprd-eastus2-01"
-}
+                  Por favor, informe um firewall para rota de internet:
 
-variable "eastus2_prd_hub_vnet_id" {
-  default = "/subscriptions/6fe14cf2-3c56-4bd4-b203-ec40f248b731/resourceGroups/rg-prd-brsouth-hub/providers/Microsoft.Network/virtualNetworks/vnet-hub-prd-eastus2-01"
+                  brsouth prd hub  -> 172.26.192.4
+                  brsouth nprd hub -> 172.26.255.4
+
+                  EOT
 }
 
 variable "vnet_address_space" {
-  default = "172.16.0.0/16"
+  default = "172.27.253.128/25"
 }
 
 variable "snet_dmz_address_prefix" {
-  default = "172.16.0.0/24"
+  default = "172.27.253.128/27"
 
 }
 
 variable "snet_web_address_prefix" {
-  default = "172.16.1.0/24"
+  default = "172.27.253.160/27"
 }
 
 variable "snet_application_address_prefix" {
-  default = "172.16.2.0/24"
-
+  default = "172.27.253.192/27"
 }
 
 variable "snet_database_address_prefix" {
-  default = "172.16.3.0/24"
-
+  default = "172.27.253.224/27"
 }
 
-######################################################
-##
-##    TAGS
-##
-######################################################
+####################################
+##                                ##  
+##          DEFAULT TAGS          ##
+##                                ##
+####################################
 
 variable "tag_sigla" {
   type        = string
@@ -92,7 +99,6 @@ variable "tag_golive" {
 variable "tag_backup" {
   type    = bool
   default = false
-
 }
 
 variable "tag_function" {
